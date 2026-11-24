@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MACD All Entry (Suite) — User Guide</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#161d24; --card:#1b242d; --line:#2b3946;
+    --text:#d7e2ec; --muted:#93a4b5; --accent:#4fa3ff; --good:#49c46b;
+    --warn:#e0a03c; --bad:#e0645f; --code:#0b1015;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font:16px/1.65 -apple-system,"Segoe UI",Roboto,Tahoma,sans-serif}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header.top{position:sticky;top:0;z-index:20;background:rgba(15,20,25,.94);
+       border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  .top-inner{max-width:1040px;margin:0 auto;padding:10px 20px;display:flex;
+       align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{font-weight:700;letter-spacing:.2px;color:#fff;font-size:15px}
+  .ver{font-size:12px;color:var(--muted);border:1px solid var(--line);
+       border-radius:999px;padding:2px 9px}
+  nav.toc{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;font-size:13px}
+  nav.toc a{color:var(--muted)}
+  main{max-width:1040px;margin:0 auto;padding:26px 20px 70px}
+  h1{font-size:30px;line-height:1.2;margin:6px 0 8px;color:#fff}
+  .lede{color:var(--muted);max-width:76ch;margin:0 0 18px}
+  h2{font-size:21px;margin:34px 0 10px;padding-bottom:6px;
+     border-bottom:1px solid var(--line);color:#fff;scroll-margin-top:64px}
+  h3{font-size:16px;margin:20px 0 6px;color:#eaf2f9}
+  p{margin:8px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;
+        padding:14px 16px;margin:12px 0}
+  .card.warn{border-color:#6a4a18;background:#241b10}
+  .card.tip{border-color:#245c33;background:#101d14}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 4px;overflow:hidden}
+  th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{color:#fff;background:#1f2933;font-weight:600}
+  tbody tr:hover{background:#1a232c}
+  code{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;
+       background:#0b1015;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;
+      padding:14px;overflow:auto;font-family:ui-monospace,Consolas,monospace;
+      font-size:13.5px;line-height:1.5;margin:10px 0}
+  pre code{background:none;border:0;padding:0;font-size:inherit}
+  .tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;
+       border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .tag.b{color:var(--good);border-color:#245c33}
+  .tag.r{color:var(--bad);border-color:#6a2a28}
+  ol,ul{margin:8px 0 8px 22px;padding:0}
+  li{margin:4px 0}
+  .check{list-style:none;margin-left:0}
+  .check li::before{content:"☐ ";color:var(--accent)}
+  footer{max-width:1040px;margin:0 auto;padding:22px 20px 50px;
+         border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  @media print{
+    :root{--bg:#fff;--card:#fff;--panel:#fff;--text:#111;--muted:#555;
+          --line:#ccc;--accent:#1f4e79;--code:#f6f8fa}
+    header.top{position:static;background:#fff}
+    nav.toc{display:none}
+    body{font-size:11pt}
+    pre,table,code{page-break-inside:avoid}
+    h2{scroll-margin-top:0}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">MACD All Entry (Suite)</div>
+    <div class="ver">User Guide · v1.12+</div>
+    <nav class="toc">
+      <a href="#what">What it is</a>
+      <a href="#install">Install</a>
+      <a href="#panels">Panels</a>
+      <a href="#tables">Rank tables</a>
+      <a href="#pips">Pips</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#inputs">Inputs</a>
+      <a href="#modes">Modes</a>
+      <a href="#ea">EA use</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <h1>MACD All Entry (Suite) — User Guide</h1>
+  <p class="lede">
+    A beginner-friendly guide to the Entry Suite MACD indicator: what it draws, how to read the
+    statistics panels, how to set “pips” correctly on FX, metals and indices, and how to hand a
+    verified rule to your own Expert Advisor.
+  </p>
+
+  <div class="card warn">
+    <strong>It never trades.</strong> The indicator only draws BUY/SELL arrows and prints
+    statistics from history. It does not open, close or manage orders, and it is not investment
+    advice. All numbers are in-sample on the history loaded in your terminal.
+  </div>
+
+  <h2 id="what">1 · What it does</h2>
+  <pre><code>price → MACD (EMA 12 / EMA 26) → signal (EMA 9)
+                                  │
+                    20 rules (mode 1..20)
+                                  │
+       ┌──────────────────────────┼───────────────────────────┐
+       │                          │                           │
+ chart arrows             statistics panels              CSV export
+ buy / sell               win%, pips, TOP/WORST         for later review</code></pre>
+
+  <div class="grid">
+    <div class="card"><strong>Mode</strong><br>
+      One of 20 entry rules: MACD/Signal cross, zero cross, histogram turn, slope, divergence, …</div>
+    <div class="card"><strong>Expiration (E)</strong><br>
+      Bars held after the signal. <code>E3</code>: enter at the next bar’s open, exit at the close
+      of signal bar + 3.</div>
+    <div class="card"><strong>No repaint</strong><br>
+      Everything is computed on closed bars, so a finished arrow is never moved or removed.</div>
+  </div>
+
+  <h2 id="install">2 · Install</h2>
+  <ol>
+    <li>MT5 → <code>File</code> → <code>Open Data Folder</code>.</li>
+    <li>Open <code>MQL5\Indicators\Entry Suite\</code>.</li>
+    <li>Copy <code>MACD All Entry (Suite).ex5</code> into it (compile the <code>.mq5</code> with <code>F7</code> if you only have source).</li>
+    <li>Back in MT5: right-click <code>Navigator</code> → <code>Refresh</code>.</li>
+    <li>Drag <code>MACD All Entry (Suite)</code> onto a chart.</li>
+  </ol>
+
+  <h2 id="panels">3 · Reading the panels</h2>
+
+  <h3>Legacy panel — <code>InpShowPanel</code> + <code>InpPanelView</code></h3>
+  <p><span class="tag b">MATRIX</span> win% per expiration, one row per mode:</p>
+  <pre><code>  # Mode                E1    E2    E3    E4    E5    n
+&gt; ACTIVE              62.5  58.1  60.0  57.4  55.0   48
+*11 Cross Zero Strong 62.5  58.1  60.0  57.4  55.0   48
+ 05 Main Pattern      58.0  54.2  51.0  49.0  47.5   96</code></pre>
+  <table>
+    <thead><tr><th>Element</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>&gt;</code></td><td>ACTIVE row — all enabled modes combined (one signal = one trade)</td></tr>
+      <tr><td><code>*</code></td><td>this mode is enabled</td></tr>
+      <tr><td>E1..E5</td><td>win% when the trade is held that many bars</td></tr>
+      <tr><td><code>n</code></td><td>trades of the first expiration</td></tr>
+    </tbody>
+  </table>
+
+  <p><span class="tag">DETAIL</span> win%, trades and net pips for the first expiration only.</p>
+  <p><span class="tag">PIPS</span> net pips per mode × expiration, with row totals and column sums:</p>
+  <pre><code>  # Mode                   E1     E2     E3     E4     E5    Total
+&gt; ACTIVE               +12.5   -8.0  +31.2  +10.4   -2.1    +44.0
+*11 Cross Zero Strong  +12.5   -8.0  +31.2  +10.4   -2.1    +44.0
+  COL SUM (all modes)  +40.0  +12.0  +55.0  +18.0   +5.0   +130.0</code></pre>
+  <p class="lede">Column sums add every mode together — an overview, not a portfolio.</p>
+
+  <h2 id="tables">4 · The two ranking tables</h2>
+  <p>Each table is an independent panel with its own on/off switch, corner and offset.</p>
+  <div class="grid">
+    <div class="card"><strong>TOP TOTAL PIPS</strong> — <code>InpShowTopPips</code><br>
+      Sorted by total net pips. High-frequency rules naturally rank high; that is not
+      “better per trade”.</div>
+    <div class="card"><strong>TOP PIPS / TRADE</strong> — <code>InpShowTopAvg</code><br>
+      Sorted by average pips per trade — a quality view for risk-conscious traders.</div>
+  </div>
+
+  <pre><code>TOP TOTAL PIPS  n&gt;=10  sorted by net pips
+  # Md Mode                Exp  Win%    pips    n    p/t    PF LS
+1 11 Cross Zero Strong     E3   62.5  +180.4   48   3.76  2.90  3</code></pre>
+
+  <table>
+    <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>#</code></td><td>rank inside this table</td></tr>
+      <tr><td><code>Md</code></td><td>mode 1..20; <code>&gt;</code> = ACTIVE (combined)</td></tr>
+      <tr><td><code>Mode</code></td><td>mode name</td></tr>
+      <tr><td><code>Exp</code></td><td>bars held</td></tr>
+      <tr><td><code>Win%</code></td><td>wins ÷ (wins + losses)</td></tr>
+      <tr><td><code>pips</code></td><td>net pips of the combo</td></tr>
+      <tr><td><code>n</code></td><td>trades used</td></tr>
+      <tr><td><code>p/t</code></td><td>pips per trade (expectancy)</td></tr>
+      <tr><td><code>PF</code></td><td>gross win ÷ gross loss; <code>inf</code> = no losing trade yet</td></tr>
+      <tr><td><code>LS</code></td><td>longest losing streak</td></tr>
+    </tbody>
+  </table>
+
+  <p><code>InpShowWorstPips</code> / <code>InpShowWorstAvg</code> append a WORST block to each
+  table; <code>InpTopN</code> sets rows per block (1..5). Combos below <code>InpMinTrades</code>
+  are never ranked.</p>
+
+  <h2 id="pips">5 · Pips — set this correctly</h2>
+  <table>
+    <thead><tr><th>Asset</th><th>Example</th><th>1 pip</th><th>Setting</th></tr></thead>
+    <tbody>
+      <tr><td>EURUSD, GBPUSD (5 digits)</td><td>1.08542</td><td>0.0001</td><td><code>PIP_AUTO</code></td></tr>
+      <tr><td>USDJPY, GBPJPY (3 digits)</td><td>149.523</td><td>0.01</td><td><code>PIP_AUTO</code></td></tr>
+      <tr><td>XAUUSD (2 digits)</td><td>2650.15</td><td>0.1 = 10 points</td><td><code>PIP_TEN_POINTS</code></td></tr>
+      <tr><td>US500 / NAS100</td><td>5200.5</td><td>0.1 or 1.0</td><td><code>PIP_TEN_POINTS</code> or <code>PIP_CUSTOM</code></td></tr>
+      <tr><td>BTCUSD / ETHUSD</td><td>~100000</td><td>1.0 or 0.1</td><td><code>PIP_CUSTOM</code></td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><code>PIP_AUTO</code> — 3/5 digits → 10 points, otherwise 1 point (old behaviour)</li>
+    <li><code>PIP_POINTS</code> — 1 pip = 1 point</li>
+    <li><code>PIP_TEN_POINTS</code> — 1 pip = 10 points</li>
+    <li><code>PIP_CUSTOM</code> — 1 pip = <code>InpPipCustomPoints</code> points</li>
+  </ul>
+  <div class="card tip">
+    <strong>Verify:</strong> line 2 of the main panel shows <code>Pip 0.10 = 10.0 pts</code>.
+    If it does not match your broker, change <code>InpPipMode</code> and look again.
+  </div>
+  <div class="card warn">
+    Never compare pips across symbols: 0.1 on XAUUSD is not 0.0001 on EURUSD. Compare inside one
+    symbol, or across timeframes of that symbol.
+  </div>
+
+  <h2 id="workflow">6 · Research workflow</h2>
+  <ol>
+    <li>Pick a symbol and timeframe you understand.</li>
+    <li>Set the pip definition and verify the <code>Pip … = … pts</code> line.</li>
+    <li>Set <code>InpActiveModes</code> (use <code>ALL</code> while exploring).</li>
+    <li>Open the table you need: TOP total pips or TOP pips/trade.</li>
+    <li>Choose a mode + expiration where <code>n</code> is high, <code>Win%</code> and
+        <code>p/t</code> agree, and <code>LS</code> is acceptable.</li>
+    <li>Record it, or enable <code>InpExportCSV</code> once to keep the table.</li>
+    <li>Switch the panels off and leave only the chosen mode active.</li>
+    <li>Hand the chart or the indicator buffers to your EA.</li>
+  </ol>
+  <p class="lede">Switching panels off never changes signals or buffers — it only removes chart objects.</p>
+
+  <h2>7 · CSV export</h2>
+  <ul>
+    <li>Enable <code>InpExportCSV</code>; the file is rewritten on each stats recalculation.</li>
+    <li>Location: <code>MQL5\Files\EntrySuite_MACD_&lt;SYMBOL&gt;_&lt;TF&gt;.csv</code>.</li>
+    <li>Header rows: <code>symbol, timeframe, server_time, stats_bars, active_modes,
+        min_trades, pip_mode, pip_points</code>.</li>
+    <li>Then <code>ACTIVE,combined</code> and one row per mode with
+        <code>E{k}_win%</code>, <code>E{k}_n</code>, <code>E{k}_pips</code>.</li>
+  </ul>
+
+  <h2 id="inputs">8 · Input reference</h2>
+  <table>
+    <thead><tr><th>Group</th><th>Input</th><th>Default</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>MACD</td><td><code>InpFastEMA</code></td><td>12</td><td>fast EMA</td></tr>
+      <tr><td>MACD</td><td><code>InpSlowEMA</code></td><td>26</td><td>slow EMA</td></tr>
+      <tr><td>MACD</td><td><code>InpSignalEMA</code></td><td>9</td><td>EMA of MACD</td></tr>
+      <tr><td>MACD</td><td><code>InpAppliedPrice</code></td><td>PRICE_CLOSE</td><td>price source</td></tr>
+      <tr><td>Entry</td><td><code>InpExpList</code></td><td>"1,2,3,4,5"</td><td>expirations, max 8</td></tr>
+      <tr><td>Entry</td><td><code>InpActiveModes</code></td><td>"11"</td><td>enabled modes, e.g. "1,5,7-10" or ALL</td></tr>
+      <tr><td>Pips</td><td><code>InpPipMode</code></td><td>PIP_AUTO</td><td>pip definition</td></tr>
+      <tr><td>Pips</td><td><code>InpPipCustomPoints</code></td><td>10.0</td><td>points per pip (PIP_CUSTOM)</td></tr>
+      <tr><td>Divergence</td><td><code>InpFractalBars</code></td><td>2</td><td>fractal swing width</td></tr>
+      <tr><td>Divergence</td><td><code>InpDivLookback</code></td><td>60</td><td>bars to search the previous swing</td></tr>
+      <tr><td>Divergence</td><td><code>InpDivFirstBreak</code></td><td>true</td><td>only the first break</td></tr>
+      <tr><td>Statistics</td><td><code>InpStatsBars</code></td><td>1000</td><td>history bars used</td></tr>
+      <tr><td>Statistics</td><td><code>InpMinTrades</code></td><td>10</td><td>minimum trades to rank / find best</td></tr>
+      <tr><td>Statistics</td><td><code>InpStatsOnSignalOnly</code></td><td>false</td><td>recalc only on a new arrow</td></tr>
+      <tr><td>Statistics</td><td><code>InpLogStats</code></td><td>false</td><td>print stats to the journal</td></tr>
+      <tr><td>Display</td><td><code>InpShowArrows</code> / <code>InpShowModeTag</code></td><td>true / true</td><td>arrows and mode tag</td></tr>
+      <tr><td>Display</td><td><code>InpArrowOffsetPts</code></td><td>10</td><td>arrow distance (points)</td></tr>
+      <tr><td>Display</td><td><code>InpPanelView</code></td><td>PANEL_VIEW_MATRIX</td><td>MATRIX / DETAIL / PIPS</td></tr>
+      <tr><td>Display</td><td><code>InpSortByWinRate</code></td><td>true</td><td>sort rows by first-expiration win%</td></tr>
+      <tr><td>Display</td><td><code>InpPanelCorner/X/Y</code></td><td>RIGHT_UPPER / 12 / 22</td><td>main panel position</td></tr>
+      <tr><td>Tables</td><td><code>InpShowTopPips</code> / <code>InpShowTopAvg</code></td><td>true / true</td><td>show ranking tables</td></tr>
+      <tr><td>Tables</td><td><code>InpShowWorstPips</code> / <code>InpShowWorstAvg</code></td><td>false / false</td><td>append WORST rows</td></tr>
+      <tr><td>Tables</td><td><code>InpTopN</code></td><td>5</td><td>rows per block (1..5)</td></tr>
+      <tr><td>Tables</td><td><code>InpTopPipsCorner/X/Y</code></td><td>LEFT_UPPER / 12 / 22</td><td>position of the pips table</td></tr>
+      <tr><td>Tables</td><td><code>InpTopAvgCorner/X/Y</code></td><td>LEFT_UPPER / 12 / 250</td><td>position of the pips/trade table</td></tr>
+      <tr><td>Alerts</td><td><code>InpAlertPopup/Sound/Push/Email</code></td><td>true / false / false / false</td><td>notification channels</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="modes">9 · The 20 modes</h2>
+  <p class="lede"><code>m</code> = MACD line, <code>s</code> = signal, <code>h</code> = histogram;
+  SELL is the exact mirror of BUY.</p>
+  <table>
+    <thead><tr><th>#</th><th>Mode</th><th>BUY condition</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Main Cross Signal</td><td><code>m</code> crosses above <code>s</code></td></tr>
+      <tr><td>2</td><td>Main Reversal</td><td><code>m</code> hooks up (m1&gt;m2, m2&lt;m3, m1&lt;m3)</td></tr>
+      <tr><td>3</td><td>Main Cross Zero</td><td><code>m</code> crosses above 0</td></tr>
+      <tr><td>4</td><td>Main Slope</td><td><code>m1 &gt; m2</code></td></tr>
+      <tr><td>5</td><td>Main Pattern</td><td>pullback, then turn up</td></tr>
+      <tr><td>6</td><td>Signal Slope</td><td><code>s1 &gt; s2</code></td></tr>
+      <tr><td>7</td><td>Histo Grow</td><td><code>h1 &gt; h2</code></td></tr>
+      <tr><td>8</td><td>Histo Shrink</td><td>negative histogram shrinking</td></tr>
+      <tr><td>9</td><td>Histo Reversal</td><td>histogram turns up</td></tr>
+      <tr><td>10</td><td>Histo Accel</td><td>histogram accelerating up</td></tr>
+      <tr><td>11</td><td>Cross Zero Strong</td><td><code>m</code> crosses above <code>s</code> and <code>m &gt; 0</code></td></tr>
+      <tr><td>12</td><td>Dual Slope</td><td><code>m</code> and <code>s</code> rising</td></tr>
+      <tr><td>13</td><td>Zero Slope</td><td><code>m &gt; 0</code> and rising</td></tr>
+      <tr><td>14</td><td>Triple Slope</td><td><code>m</code>, <code>s</code>, <code>h</code> rising</td></tr>
+      <tr><td>15</td><td>Histo Zero Cross</td><td><code>h</code> crosses above 0</td></tr>
+      <tr><td>16</td><td>Signal Zero Cross</td><td><code>s</code> crosses above 0</td></tr>
+      <tr><td>17</td><td>MACD Zero Hook</td><td><code>m &gt; 0</code> then hooks up</td></tr>
+      <tr><td>18</td><td>Histo Strong Growth</td><td>positive histogram growing 3 bars</td></tr>
+      <tr><td>19</td><td>MACD Price Divergence</td><td>price lower low, MACD higher low (fractal)</td></tr>
+      <tr><td>20</td><td>Signal Slope Rev.</td><td><code>s</code> turns up</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="ea">10 · Using it from an Expert Advisor</h2>
+  <table>
+    <thead><tr><th>Buffer</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>0 / 1</td><td>Buy / Sell arrow (price or <code>EMPTY_VALUE</code>)</td></tr>
+      <tr><td>2..21</td><td>mode 1..20: <code>1.0</code> buy, <code>-1.0</code> sell, <code>0.0</code> none</td></tr>
+      <tr><td>22 / 23</td><td>Buy / Sell combined (enabled modes)</td></tr>
+      <tr><td>24 / 25 / 26</td><td>MACD / Signal / Histogram</td></tr>
+    </tbody>
+  </table>
+  <pre><code>// pass only leading inputs, the rest use indicator defaults
+int h = iCustom(_Symbol, _Period, "Entry Suite\\MACD All Entry (Suite)",
+                12, 26, 9, PRICE_CLOSE, "1,2,3,4,5", "11");
+if(h == INVALID_HANDLE) return;
+
+double buy[];
+if(CopyBuffer(h, 22, 0, 3, buy) &gt; 0 &amp;&amp; buy[0] &gt; 0.5)
+{
+   // combined BUY signal (buffer 23 = SELL)
+}</code></pre>
+  <p class="lede">Inputs are positional. To set a later input, pass every earlier one:
+  Fast, Slow, Signal, AppliedPrice, ExpList, ActiveModes, PipMode, PipCustomPoints,
+  FractalBars, DivLookback, DivFirstBreak, StatsBars, MinTrades, StatsOnSignalOnly, LogStats,
+  ShowArrows, ShowModeTag, ColorTag, ExportCSV, ArrowOffsetPts, ShowPanel, PanelView,
+  SortByWinRate, PanelCorner, PanelX, PanelY, FontSize, PanelBack, ColorTitle, ColorText,
+  ColorActive, ColorBest, ColorBg, ShowTopPips, ShowTopAvg, ShowWorstPips, ShowWorstAvg,
+  TopN, TopPipsCorner, TopPipsX, TopPipsY, TopAvgCorner, TopAvgX, TopAvgY,
+  AlertPopup, AlertSound, SoundFile, AlertPush, AlertEmail.
+  Call <code>IndicatorRelease(h)</code> in the EA’s <code>OnDeinit</code>.</p>
+
+  <h2 id="faq">11 · Troubleshooting</h2>
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Not in Navigator</td><td>press Refresh; check the file is in <code>MQL5\Indicators\Entry Suite\</code></td></tr>
+      <tr><td>No arrows</td><td><code>InpShowArrows</code> off, history too short, or no signal in that period</td></tr>
+      <tr><td>“no combo reaches N trades yet”</td><td>lower <code>InpMinTrades</code> or raise <code>InpStatsBars</code></td></tr>
+      <tr><td>Pips look wrong on gold / indices</td><td>wrong <code>InpPipMode</code> (section 5)</td></tr>
+      <tr><td>Panels overlap</td><td>increase <code>InpTopAvgY</code> or use different corners</td></tr>
+      <tr><td>Inputs seem ignored</td><td>press OK in the properties dialog to reload the indicator</td></tr>
+      <tr><td>Leftover objects</td><td>delete objects starting with <code>MACD_ENTRY_SUITE_</code>, <code>MACD_ES_TOPP_</code>, <code>MACD_ES_TOPA_</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>12 · Limits and risk</h2>
+  <ul>
+    <li>All statistics are in-sample on the loaded history — not a forward test.</li>
+    <li>Picking the best of 20 modes × many expirations on one dataset is curve fitting; validate elsewhere.</li>
+    <li>No SL/TP is modelled: “pips” means hold N bars and exit at the close.</li>
+    <li>High win% with negative <code>p/t</code> is possible — read them together.</li>
+    <li><code>PF = inf</code> means “no losing trade in this window”, not low risk.</li>
+    <li>Past results do not guarantee future results. Not investment advice.</li>
+  </ul>
+
+  <h2>13 · Pre-live checklist</h2>
+  <ul class="check">
+    <li>Pip mode matches the asset and the panel pip line looks right</li>
+    <li><code>InpStatsBars</code> 1000–3000 and <code>InpMinTrades</code> ≥ 10</li>
+    <li>Chosen combo has enough trades, agreeing win% / pips per trade, acceptable losing streak</li>
+    <li>Re-tested on another period or neighbouring timeframe</li>
+    <li>CSV saved as evidence</li>
+    <li>Unused panels switched off before handing the chart to an EA</li>
+    <li>SL, TP and position size handled by your EA</li>
+  </ul>
+
+</main>
+
+<footer>
+  MACD All Entry (Suite) · User Guide · v1.12+ · generated 2026-11-24 ·
+  Print with “background graphics” enabled (A4, 100%) to get a clean PDF.
+</footer>
+
+</body>
+</html>

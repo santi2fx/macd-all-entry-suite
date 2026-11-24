@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MACD All Entry (Suite) — Quick Card</title>
+<style>
+  @page { size: A4 portrait; margin: 9mm 8mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 8.6pt; line-height: 1.35; color: #1a1a1a; margin: 0;
+  }
+  header {
+    border-bottom: 2.5pt solid #1f4e79; padding-bottom: 3mm; margin-bottom: 3mm;
+  }
+  h1 { font-size: 14pt; margin: 0 0 1mm 0; color: #1f4e79; letter-spacing: .2pt; }
+  .sub { font-size: 8pt; color: #555; }
+  .cols { column-count: 2; column-gap: 7mm; }
+  section { break-inside: avoid; margin-bottom: 2.6mm; }
+  h2 {
+    font-size: 9.2pt; margin: 0 0 1.2mm 0; padding: 0.6mm 1.5mm;
+    background: #eaf1f8; border-left: 2.5pt solid #1f4e79; color: #1f4e79;
+  }
+  p { margin: 0 0 1mm 0; }
+  ul, ol { margin: 0 0 1mm 0; padding-left: 4.2mm; }
+  li { margin-bottom: 0.4mm; }
+  table { width: 100%; border-collapse: collapse; font-size: 7.8pt; margin-bottom: 1mm; }
+  th, td { border: 0.4pt solid #c9d4e0; padding: 0.7mm 1mm; vertical-align: top; }
+  th { background: #f2f6fa; text-align: left; font-weight: 600; }
+  code, .mono { font-family: Consolas, "Courier New", monospace; font-size: 7.6pt; }
+  pre {
+    font-family: Consolas, monospace; font-size: 7.2pt; line-height: 1.25;
+    background: #f7f9fb; border: 0.4pt solid #d8e0e8; padding: 1.5mm; margin: 0 0 1mm 0;
+    white-space: pre;
+  }
+  .warn { background: #fff4e5; border: 0.5pt solid #e0a03c; padding: 1.5mm; font-size: 7.9pt; }
+  .tip  { background: #eaf6ec; border: 0.5pt solid #6aa86f; padding: 1.5mm; font-size: 7.9pt; }
+  footer { margin-top: 2.5mm; border-top: 0.5pt solid #bbb; padding-top: 1mm; font-size: 7.2pt; color: #666; }
+  .kbd { font-family: Consolas, monospace; background: #eee; border: 0.4pt solid #bbb; padding: 0 1mm; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MACD All Entry (Suite) — Quick Card</h1>
+  <div class="sub">Beginner cheat sheet · v1.12+ · MQL5\Indicators\Entry Suite\MACD All Entry (Suite).ex5 ·
+    <strong>Indicator only — it never trades.</strong></div>
+</header>
+
+<div class="cols">
+
+  <section>
+    <h2>1 · Install (once)</h2>
+    <ol>
+      <li>MT5 → <span class="kbd">File</span> → <span class="kbd">Open Data Folder</span></li>
+      <li>Open <code>MQL5\Indicators\Entry Suite\</code></li>
+      <li>Copy <code>MACD All Entry (Suite).ex5</code> (compile <code>.mq5</code> with F7 if needed)</li>
+      <li>MT5 → right-click <span class="kbd">Navigator</span> → <span class="kbd">Refresh</span></li>
+      <li>Drag the indicator onto a chart</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>2 · Sensible first settings</h2>
+    <table>
+      <tr><th>Input</th><th>Value</th></tr>
+      <tr><td><code>InpActiveModes</code></td><td><code>"11"</code> or <code>ALL</code></td></tr>
+      <tr><td><code>InpExpList</code></td><td><code>"1,2,3,4,5"</code> → E1..E5</td></tr>
+      <tr><td><code>InpStatsBars</code></td><td>1000–3000</td></tr>
+      <tr><td><code>InpMinTrades</code></td><td>10</td></tr>
+      <tr><td><code>InpPipMode</code></td><td>FX = <code>PIP_AUTO</code>, gold/index = <code>PIP_TEN_POINTS</code></td></tr>
+      <tr><td><code>InpShowTopPips</code> / <code>InpShowTopAvg</code></td><td>true / true</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>3 · What is on the chart</h2>
+    <ul>
+      <li>Green ↑ = BUY, red ↓ = SELL (one arrow max per bar, no repaint)</li>
+      <li>Text like <code>mode 11</code> = the rule that produced the last arrow</li>
+      <li>Model: signal on a closed bar → entry at next bar open → exit at close of bar + E</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4 · Panels</h2>
+    <table>
+      <tr><th>Panel</th><th>Shows</th><th>Switch</th></tr>
+      <tr><td>Main (legacy)</td><td>win% / detail / pips matrix</td><td><code>InpShowPanel</code> + <code>InpPanelView</code></td></tr>
+      <tr><td>TOP TOTAL PIPS</td><td>best combos by total pips</td><td><code>InpShowTopPips</code></td></tr>
+      <tr><td>TOP PIPS / TRADE</td><td>best combos by quality per trade</td><td><code>InpShowTopAvg</code></td></tr>
+      <tr><td>WORST block</td><td>worst rows inside a table</td><td><code>InpShowWorstPips</code> / <code>InpShowWorstAvg</code></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>5 · Rank table columns</h2>
+    <table>
+      <tr><th>Col</th><th>Meaning</th></tr>
+      <tr><td><code>Md</code></td><td>mode 1..20 (<code>&gt;</code> = ACTIVE, combined)</td></tr>
+      <tr><td><code>Exp</code></td><td>bars held (E1..E8)</td></tr>
+      <tr><td><code>Win%</code></td><td>wins ÷ (wins + losses)</td></tr>
+      <tr><td><code>pips</code></td><td>net pips of the combo</td></tr>
+      <tr><td><code>n</code></td><td>number of trades</td></tr>
+      <tr><td><code>p/t</code></td><td>pips per trade</td></tr>
+      <tr><td><code>PF</code></td><td>gross win ÷ gross loss (<code>inf</code> = no loss yet)</td></tr>
+      <tr><td><code>LS</code></td><td>longest losing streak</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>6 · Pips per asset</h2>
+    <table>
+      <tr><th>Asset</th><th>1 pip</th><th>Setting</th></tr>
+      <tr><td>EURUSD, GBPUSD (5 digits)</td><td>0.0001</td><td><code>PIP_AUTO</code></td></tr>
+      <tr><td>USDJPY, GBPJPY (3 digits)</td><td>0.01</td><td><code>PIP_AUTO</code></td></tr>
+      <tr><td>XAUUSD (2 digits)</td><td>0.1 = 10 pts</td><td><code>PIP_TEN_POINTS</code></td></tr>
+      <tr><td>US500 / NAS100</td><td>0.1 or 1.0</td><td><code>PIP_TEN_POINTS</code> / <code>PIP_CUSTOM</code></td></tr>
+      <tr><td>BTCUSD / ETHUSD</td><td>1.0 or 0.1</td><td><code>PIP_CUSTOM</code></td></tr>
+    </table>
+    <p>Verify in panel line 2: <code>Pip 0.10 = 10.0 pts</code>. Never compare pips across symbols.</p>
+  </section>
+
+  <section>
+    <h2>7 · Research workflow</h2>
+    <ol>
+      <li>Pick symbol + timeframe</li>
+      <li>Set pip mode, verify the pip line</li>
+      <li>Set <code>InpActiveModes</code> (<code>ALL</code> while exploring)</li>
+      <li>Open TOP PIPS or TOP PIPS/TRADE</li>
+      <li>Pick mode + E where <code>n</code>, <code>Win%</code>, <code>p/t</code>, <code>LS</code> look sane</li>
+      <li>Save CSV (<code>InpExportCSV</code>) as evidence</li>
+      <li>Switch panels off, keep only the chosen mode</li>
+      <li>Hand the chart / buffers to your EA</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>8 · EA buffers (iCustom)</h2>
+    <table>
+      <tr><th>Buffer</th><th>Value</th></tr>
+      <tr><td>0 / 1</td><td>Buy / Sell arrow</td></tr>
+      <tr><td>2..21</td><td>mode 1..20: 1 / −1 / 0</td></tr>
+      <tr><td>22 / 23</td><td>Buy / Sell combined (enabled modes)</td></tr>
+      <tr><td>24 / 25 / 26</td><td>MACD / Signal / Histogram</td></tr>
+    </table>
+    <pre>int h = iCustom(_Symbol, _Period,
+        "Entry Suite\\MACD All Entry (Suite)",
+        12, 26, 9, PRICE_CLOSE, "1,2,3,4,5", "11");</pre>
+  </section>
+
+  <section>
+    <h2>9 · Common problems</h2>
+    <ul>
+      <li><strong>No arrows</strong> → <code>InpShowArrows</code> off, or history too short</li>
+      <li><strong>“no combo reaches N trades”</strong> → lower <code>InpMinTrades</code>, raise <code>InpStatsBars</code></li>
+      <li><strong>Wrong pip values</strong> → wrong <code>InpPipMode</code></li>
+      <li><strong>Panels overlap</strong> → change <code>InpTopAvgY</code> or the corner</li>
+      <li><strong>Inputs ignored</strong> → press OK in the properties dialog</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="warn">
+      <strong>Risk notice.</strong> Statistics are in-sample on loaded history. No SL/TP is modelled.
+      High win% with negative <code>p/t</code> is possible and <code>PF = inf</code> does not mean low risk.
+      Past results never guarantee future results. Not investment advice.
+    </div>
+  </section>
+
+  <section>
+    <div class="tip">
+      <strong>Before going live:</strong> re-test the chosen mode + expiration on another period
+      (walk-forward) or in Strategy Tester, and let your EA handle SL, TP and position size.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  MACD All Entry (Suite) · Quick Card · generated 2026-11-24 · print A4 (background graphics on) or Save as PDF at 100%.
+</footer>
+
+</body>
+</html>
